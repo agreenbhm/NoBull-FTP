@@ -1,127 +1,87 @@
 <?php
+
+$loginerror = false;
+$userlogin = false;
+$connect_error = false;
+
 	
-if(!isset($_POST['login']))
+if(!isset($_POST['login'])) //if user has NOT submitted login form
 {
-      $loginerror = false;
+      //$loginerror = false;
+	  //$connect_error = false;
 
       echo "Login not posted";
-}
+} //end if user has not submitted login form
 	
-if(isset($_POST['login'])) 
+if(isset($_POST['login'])) //if user is logging in
 {
 
+	//start ftp
+	
 	$username = $_POST['username'];
 	$pw = $_POST['passw'];
 	
-	//start ftp
-
 	echo $_SESSION['ftp_server'] = $server = gethostbyname("localhost");
 	echo $_SESSION['ftp_port'] = $port = "21";
-	echo $_SESSION['timeout_time'] = "30";
+	//echo $_SESSION['timeout_time'] = "30";
 	echo $_SESSION['ftp_user'] = $ftp_user_name = trim($username);
 	echo $_SESSION['ftp_pw'] = $ftp_user_pass = trim($pw);
 	echo $_SESSION['ftp_mode'] = $mode = FTP_BINARY;
 	
-	
-	//echo $dest = basename($target_path);
-	//echo $source = $target_path;
-	
-
-	//$_SESSION['conn_id'] = 
-	
-	if ($conn_id = ftp_connect($_SESSION['ftp_server'], $_SESSION['ftp_port'], 30)) //Attempt to connect to FTP server
+	if ($conn_id = ftp_connect($_SESSION['ftp_server'], $_SESSION['ftp_port'], 10)) // If able to connect to FTP server
 	{
-
-	//$_SESSION['ftp_login'] = 
 	
-	//if ($conn_id) //If abble to establish connection
-	//{
-		if ($login = ftp_login($conn_id, $_SESSION['ftp_user'], $_SESSION['ftp_pw'])) //Then attempt to login using entered creds
+		if ($login = @ftp_login($conn_id, $_SESSION['ftp_user'], $_SESSION['ftp_pw'])) //Then attempt to login using entered creds
 		{
-		/*
-		if (!$login)
-		{
-			session_unset();
-			session_destroy();
-			echo $username;
-			echo $pw;
-			$userlogin = false;
-			$cred_error = true;
-			include 'session_test.inc';
-			//die('Incorrect login.  Please try again.');
-			echo ('Incorrect login.  Please try again.');
-			}
-			*/
-		
-			//if ($login) //If able to login successfully
-			//{ 
 			echo('Successfully connected & logged in to ' . $server . ' as ' . $ftp_user_name . ' <br><br>');
-			
-			//$_SESSION['name'] = $ftp_user_name;
-			$userlogin = true;
-		//}
+			$userlogin = true; //Set logged in status to true
+			//ftp_close($conn_id);
+
 		} // End if succesfully logged in
 		
-		else //if unable to login
+		elseif (!$login) //If unable to login
 		{
 			echo('Login unsuccessful.  Please check your login credentials.');
-			$userlogin = false;
+			$userlogin = false; //Set logged in status to false
+			//ftp_close($conn_id);
 		}
-		/*
-		elseif (!$conn_id || !$login) 
-		{ 
-			session_unset();
-			session_destroy();
-			$userlogin = false;
-			//$loginerror = true;
-			die('FTP connection attempt failed!');
-		}
-		*/
-		//end ftp
 		
 	} //End if successful connection
 	
 	else //If unable to establish connection to FTP
 	{
-		$userlogin = false;
-		session_unset();
-		session_destroy();
-		//die('FTP server unreachable.');
-		echo ('FTP server unreachable.');
+		$userlogin = false; //Set logged in status to false
+		$connect_error = true;
+		session_unset(); //Remove entereed creds from session
+		session_destroy(); //Kill session
+		echo ('FTP server unreachable.  Please try again later.');
+	}
+	
+	//End FTP code
+
+	if ($userlogin) //If user is logged in
+	{
+		echo 'userlogin=true.-----------------------------';
+		$_SESSION['name'] = $ftp_user_name;
+	}
+	
+	elseif (!$userlogin) //If user is not logged in
+	{
+		echo 'userlogin=false.-----------------------------';
+		$loginerror = true;
 	}
 
-					if ($userlogin = true)
-					{
-						echo 'userlogin=true.-----------------------------';
-					}
-
-					else
-					{
-						echo 'userlogin=false.-----------------------------';
-					}
 
 
 
-					if($userlogin)     
-					{
-						$_SESSION['name'] = $username;
-						//$_SESSION['conn_id'] = $conn_id);
-					}
-
-					elseif(!$userlogin)
-					{
-						$loginerror = true;
-					}
+} //End if user has submitted login form
 
 
-				}
-
-
-				if(isset($_POST['logout']))
-				{
-					session_unset();
-					session_destroy();
-				}
+if(isset($_POST['logout'])) //If user has submitted logout form
+{
+	session_unset();
+	session_destroy();
+}
 
 ?>
 
@@ -132,7 +92,7 @@ if(isset($_POST['login']))
 
 <?php
 
-if(isset($_SESSION['name']))
+if(isset($_SESSION['name'])) 
 {
 	$dispname = $_SESSION['name'];
 	echo "You are logged in as $dispname.  <a href=account.php>Click here to view your account.</a>";
@@ -140,19 +100,21 @@ if(isset($_SESSION['name']))
 
 }
 
-elseif($loginerror && $cred_error)
+elseif($loginerror && !$connect_error)
 {
 	echo "Incorrect username and/or password.  Please try again.";
 	include("./login.inc");
 }
 
-elseif($loginerror && !$cred_error)
+
+elseif($connect_error)
 {
 	echo "Unable to contact the FTP server.  Please try again.";
 	include("./login.inc");
 }
 
-else //(!isset($_SESSION['name']))
+
+else
 {
 	echo "You are not logged in.";
 	include("./login.inc");
@@ -161,11 +123,6 @@ else //(!isset($_SESSION['name']))
 ?>
 
 <?php
-
-//if(isset($_SESSION['name']))
-//{
-//$projects = $username . ".php";
-//}
 
 if(!isset($_SESSION['name']))
 {

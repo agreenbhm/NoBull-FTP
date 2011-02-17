@@ -62,18 +62,29 @@ if(!isset($_POST['login'])) //If NOT re-loading this page as a result of a login
 			}
 
 			//End FTP code block
+			
+			include 'upload_form.inc'; //Include form to upload files
 
-	}
+
+	} //end if logged in and uploading
 
 
-	else //If not logged in
+	elseif (!isset($_SESSION['name']) && !isset($_POST['logout'])) //If not logged in
 	{
 		echo "You must be logged in to upload";
 	}
 
 } //End if NOT submitting login form
 
-include 'upload_form.inc'; //Include form to upload files
+if (isset($_SESSION['name']) && !isset($_FILES['uploadedfile'])) //If page loaded and user logged in but has not submitted file to upload
+{
+	include 'upload_form.inc'; //Include form to upload files
+}
+
+elseif (!isset($_SESSION['name'])) //If not logged in but page was loaded directly
+{
+	echo "You must be logged in to upload";
+}
 
 include 'bot.inc'; //Include footer file
 
