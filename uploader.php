@@ -1,89 +1,80 @@
 <?php
 
-session_start(); // start session
-include 'top.inc';
+session_start(); // Start session
 
-if(!isset($_POST['login']))
+include 'top.inc'; //Include header file
+
+if(!isset($_POST['login'])) //If NOT re-loading this page as a result of a login
 {
-	if(isset($_SESSION['name']) && isset($_FILES['uploadedfile'])) //if logged in and trying to upload
+	if(isset($_SESSION['name']) && isset($_FILES['uploadedfile'])) //If logged in and trying to upload
 	{
-			// Where the file is going to be placed 
-			$target_path = "tmp/";
+			$target_path = "tmp/"; // Where the file is going to be stored on the server temporarily before upload via FTP
 
-			/* Add the original filename to our target path.  
-			Result is "uploads/filename.extension" */
-			//$target_path = $target_path . basename( $_FILES['uploadedfile']['name']); 
+			$filename = basename( $_FILES['uploadedfile']['name']); //Name of file to be uploaded (without path).
 			
-			$filename = basename( $_FILES['uploadedfile']['name']);
-			$target_fullname = $target_path . basename( $_FILES['uploadedfile']['name']);
-			
-			//////end upload 1
-
+			$target_fullname = $target_path . basename( $_FILES['uploadedfile']['name']); //Full path on the server that file will be held (including file name)
 			//Upload 2 Begin
+			if(move_uploaded_file($_FILES['uploadedfile']['tmp_name'], $target_fullname)) //Transfer file to temp location on web server 
+			{ 
+				
+			} 
 			
-			if(move_uploaded_file($_FILES['uploadedfile']['tmp_name'], $target_fullname)) {
-				/*echo "The file ".  basename( $_FILES['uploadedfile']['name']). 
-				" has been uploaded to the server for transfer via FTP";*/
-			} else{
-				echo "There was an error uploading the file to the server for FTP transfer, please try again!";
+			else //If unable to transfer file to web server temp location
+			{
+				echo "There was an error uploading the file to the server for FTP transfer, please try again!"; //Error message
 			}
 
 
-			//start ftp
+			//Start FTP code block
 			
-			$source = $target_fullname;
-			$dest = $filename;
+			$source = $target_fullname; //File to be FTP'd, including path, in temp location on web server
+			$dest = $filename; //Destination filename (and eventually, in later code, path) on FTP server
 			
-			$conn_id = ftp_connect($_SESSION['ftp_server'], $_SESSION['ftp_port'], 30);
+			$conn_id = ftp_connect($_SESSION['ftp_server'], $_SESSION['ftp_port'], 30); //Open FTP connection using cached login credentials
 			
-			
-			//$_SESSION['conn_id'];
-			
-			if($conn_id)
+			// -------------Diagnostic info regarding ftp_connect----------------
+			if($conn_id) //If able to connect to FTP server
 			{
 				echo "Session Connected";
 			}
 			elseif(!$conn_id)
 			{
 				echo "Session Unable to Connect<br>";
-				//echo $_SESSION['conn_id'] . "<br>";
-				//echo $server;
 			}
+			// ----------------End diagnostic info------------------
 			
-			if($ftp_login = ftp_login($conn_id, $_SESSION['ftp_user'], $_SESSION['ftp_pw']));
+			if(ftp_login($conn_id, $_SESSION['ftp_user'], $_SESSION['ftp_pw'])) //If login to FTP server using cached credentials is successful
 			{
-				$upload = ftp_put($conn_id, $dest, $source, $_SESSION['ftp_mode']);
+				$upload = ftp_put($conn_id, $dest, $source, $_SESSION['ftp_mode']); //Transfer file to FTP using temp file as source
 
-				//echo $source . '<br><br>';
-				//echo $dest . '<br><br>';
-
-				if ($upload) 
+				if ($upload) //If successfully uploaded via FTP
 				{
 				    echo 'FTP upload of ' . $dest . ' was successfull!';
-				    unlink($source);
+					ftp_close($conn_id);
+				    unlink($source); //Delete file from temp directory on webserver
 				}
 
-				elseif (!$upload) { echo 'FTP upload of ' . $dest . ' failed!'; }
+				elseif (!$upload) //If FTP upload is unsuccessful
+				{ 
+					echo 'FTP upload of ' . $dest . ' failed!'; 
+					ftp_close($conn_id); //Close FTP session
+				}
 			}
-			//ftp_close($_SESSION['conn_id']);
 
-			//end ftp
+			//End FTP code block
 
 	}
 
 
-	else //if not logged in
+	else //If not logged in
 	{
 		echo "You must be logged in to upload";
 	}
 
-} //end if not submitting form
+} //End if NOT submitting login form
 
-include 'upload_form.inc';
+include 'upload_form.inc'; //Include form to upload files
 
-include 'bot.inc';
-
-
-
+include 'bot.inc'; //Include footer file
 
 ?>

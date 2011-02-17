@@ -27,81 +27,87 @@ if(isset($_POST['login']))
 	//echo $source = $target_path;
 	
 
-	$_SESSION['conn_id'] = $conn_id = ftp_connect($_SESSION['ftp_server'], $_SESSION['ftp_port'], 30);
+	//$_SESSION['conn_id'] = 
+	
+	$conn_id = ftp_connect($_SESSION['ftp_server'], $_SESSION['ftp_port'], 30);
 
 	if (!$conn_id)
 	{
 		$userlogin = false;
 		session_unset();
 		session_destroy();
-		die('FTP server unreachable.');
+		//die('FTP server unreachable.');
+		echo ('FTP server unreachable.');
 	}
 
-	$_SESSION['ftp_login'] = $login = ftp_login($_SESSION['conn_id'], $_SESSION['ftp_user'], $_SESSION['ftp_pw']);
+	//$_SESSION['ftp_login'] = 
+	
+					$login = ftp_login($_SESSION['conn_id'], $_SESSION['ftp_user'], $_SESSION['ftp_pw']);
 
-	if (!$login)
-	{
-		session_unset();
-		session_destroy();
-		echo $username;
-		echo $pw;
-		$userlogin = false;
-		$cred_error = true;
-		include 'session_test.inc';
-		die('Incorrect login.  Please try again.');
-	}
+					if (!$login)
+					{
+						session_unset();
+						session_destroy();
+						echo $username;
+						echo $pw;
+						$userlogin = false;
+						$cred_error = true;
+						include 'session_test.inc';
+						//die('Incorrect login.  Please try again.');
+						echo ('Incorrect login.  Please try again.');
+					}
 
-	if ($conn_id && $login) 
-	{ 
-		echo('Successfully connected & logged in to ' . $server . ' as ' . $ftp_user_name . ' <br><br>');
-		
-		//$_SESSION['name'] = $ftp_user_name;
-		$userlogin = true;
-	}
+					if ($conn_id && $login) 
+					{ 
+						echo('Successfully connected & logged in to ' . $server . ' as ' . $ftp_user_name . ' <br><br>');
+						
+						//$_SESSION['name'] = $ftp_user_name;
+						$userlogin = true;
+					}
 
-	elseif (!$conn_id || !$login) 
-	{ 
-		session_unset();
-		session_destroy();
-		$userlogin = false;
-		//$loginerror = true;
-		die('FTP connection attempt failed!');
-	}
-	//end ftp
-
-
-	if ($userlogin = true)
-	{
-		echo 'userlogin=true.-----------------------------';
-	}
-
-	else
-	{
-		echo 'userlogin=false.-----------------------------';
-	}
+					elseif (!$conn_id || !$login) 
+					{ 
+						session_unset();
+						session_destroy();
+						$userlogin = false;
+						//$loginerror = true;
+						die('FTP connection attempt failed!');
+					}
+					//end ftp
 
 
+					if ($userlogin = true)
+					{
+						echo 'userlogin=true.-----------------------------';
+					}
 
-	if($userlogin)     
-	{
-		$_SESSION['name'] = $username;
-		//$_SESSION['conn_id'] = $conn_id);
-	}
-
-	elseif(!$userlogin)
-	{
-		$loginerror = true;
-	}
+					else
+					{
+						echo 'userlogin=false.-----------------------------';
+					}
 
 
-}
+
+					if($userlogin)     
+					{
+						$_SESSION['name'] = $username;
+						//$_SESSION['conn_id'] = $conn_id);
+					}
+
+					elseif(!$userlogin)
+					{
+						$loginerror = true;
+					}
 
 
-if(isset($_POST['logout']))
-{
-	session_unset();
-	session_destroy();
-}
+				}
+
+
+				if(isset($_POST['logout']))
+				{
+					session_unset();
+					session_destroy();
+				}
 
 ?>
 

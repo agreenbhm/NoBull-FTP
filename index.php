@@ -6,11 +6,23 @@ session_start(); // start session
 
 
 <?php
-include("top.inc"); ?>
+	include("top.inc");
+?>
+
 <br>
 <br>
 
-<?php include("upload_form.inc"); ?>
+<?php 
+	if(isset($_SESSION['name']))
+	{
+		include("upload_form.inc");
+	}
+	
+	else
+	{
+		echo "<center>You must be logged in to use the FTP.</center>";
+	}
+?>
 
 <center>
 
