@@ -1,0 +1,62 @@
+<?php
+
+
+if(isset($_POST['login'])) 
+{
+$username = $_POST['username'];
+$pw = $_POST['pw'];
+
+$file = "users.php";
+$found = false;
+$fh = fopen($file, "r");
+
+while(!feof($fh) && !$found) 
+{
+
+$line = fgets($fh);
+
+$line = explode(" ", $line);
+$userfile = $line[0];
+$pwfile = $line[1];
+
+			
+if($username == $userfile && $pwfile == $pw . "\n")     
+{
+$found = true;
+session_start(); // start session
+$_SESSION['name'] = $username; 
+}
+
+}  //end while
+}
+?>
+
+
+<link rel="stylesheet" type="text/css" href="style.css">
+
+<?php include("top.inc");?>
+
+<font face="News Topic MT" size="+1" color="white">
+<center>
+<?php
+
+if(isset($_SESSION['name']))
+{
+echo "Welcome " . $_SESSION['name'] . "!";
+include("logout.inc");
+}
+
+elseif(!isset($_SESSION['name']))
+{
+echo "You are not logged in.";
+include("login.inc");
+}
+
+?>
+<h4>
+Welcome to Groundzero Coding!
+
+
+<?php include("bot.inc"); ?>
+
+</html>

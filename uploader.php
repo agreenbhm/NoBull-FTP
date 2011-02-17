@@ -1,0 +1,89 @@
+<?php
+
+session_start(); // start session
+include 'top.inc';
+
+if(!isset($_POST['login']))
+{
+	if(isset($_SESSION['name']) && isset($_FILES['uploadedfile'])) //if logged in and trying to upload
+	{
+			// Where the file is going to be placed 
+			$target_path = "tmp/";
+
+			/* Add the original filename to our target path.  
+			Result is "uploads/filename.extension" */
+			//$target_path = $target_path . basename( $_FILES['uploadedfile']['name']); 
+			
+			$filename = basename( $_FILES['uploadedfile']['name']);
+			$target_fullname = $target_path . basename( $_FILES['uploadedfile']['name']);
+			
+			//////end upload 1
+
+			//Upload 2 Begin
+			
+			if(move_uploaded_file($_FILES['uploadedfile']['tmp_name'], $target_fullname)) {
+				/*echo "The file ".  basename( $_FILES['uploadedfile']['name']). 
+				" has been uploaded to the server for transfer via FTP";*/
+			} else{
+				echo "There was an error uploading the file to the server for FTP transfer, please try again!";
+			}
+
+
+			//start ftp
+			
+			$source = $target_fullname;
+			$dest = $filename;
+			
+			$conn_id = ftp_connect($_SESSION['ftp_server'], $_SESSION['ftp_port'], 30);
+			
+			
+			//$_SESSION['conn_id'];
+			
+			if($conn_id)
+			{
+				echo "Session Connected";
+			}
+			elseif(!$conn_id)
+			{
+				echo "Session Unable to Connect<br>";
+				//echo $_SESSION['conn_id'] . "<br>";
+				//echo $server;
+			}
+			
+			if($ftp_login = ftp_login($conn_id, $_SESSION['ftp_user'], $_SESSION['ftp_pw']));
+			{
+				$upload = ftp_put($conn_id, $dest, $source, $_SESSION['ftp_mode']);
+
+				//echo $source . '<br><br>';
+				//echo $dest . '<br><br>';
+
+				if ($upload) 
+				{
+				    echo 'FTP upload of ' . $dest . ' was successfull!';
+				    unlink($source);
+				}
+
+				elseif (!$upload) { echo 'FTP upload of ' . $dest . ' failed!'; }
+			}
+			//ftp_close($_SESSION['conn_id']);
+
+			//end ftp
+
+	}
+
+
+	else //if not logged in
+	{
+		echo "You must be logged in to upload";
+	}
+
+} //end if not submitting form
+
+include 'upload_form.inc';
+
+include 'bot.inc';
+
+
+
+
+?>

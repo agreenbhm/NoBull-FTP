@@ -1,0 +1,25 @@
+<?php
+session_start(); // start session
+?>
+<link rel="stylesheet" type="text/css" href="style.css">
+
+
+
+<?php
+include("top.inc"); ?>
+<br>
+<br>
+
+<?php include("upload_form.inc"); ?>
+<form enctype="multipart/form-data" action="uploader.php" method="POST">
+<input type="hidden" name="MAX_FILE_SIZE" value="10000000" />
+Choose a file to upload: <input name="uploadedfile" type="file" /><br />
+<input type="submit" value="Upload File" />
+</form>
+
+
+<!-- INSERT --><center>
+
+
+
+<?php include("bot.inc"); ?> 

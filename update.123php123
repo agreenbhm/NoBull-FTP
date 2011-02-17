@@ -1,0 +1,101 @@
+<?php
+session_start(); // start session
+?>
+
+<html>
+<head>
+
+
+
+<?php include("top.inc"); ?>
+<center>
+<br>
+You must be logged in to post.  This will post a message on the main page.
+<br>
+<br>
+</center>
+
+
+</head>
+
+
+<?php
+
+//CMS Post
+if (isset($_POST['submitted'])) {
+if (isset($_SESSION['name']))
+{
+$author = $_SESSION['name'];
+
+
+//Get vars
+$body = $_POST['body'];
+$file = "index.php";
+
+if($file == "update.php")
+{
+exit;
+
+}
+
+
+
+//Author
+$author = "-" . $author;
+
+
+//Get body
+$body = str_replace("\n", "<br />", $body);
+$body = trim($body,"34");
+$body = stripslashes($body);
+$body = "<!-- INSERT --><center>\n\n" . "<font size=\"-1\"><i>" . date('F d Y') . "</i></font><br /><font size=\"4\">" . $body . "<br>";
+$body = $body . "<font size=\"2\">" . $author . "</font></center><br /><br />\n\n";
+
+//Open file and replace info
+$fh = fopen($file, 'r');
+$data = fread($fh, filesize($file));
+fclose($fh);
+$data = str_replace("<!-- INSERT -->",$body,$data); 
+echo "<table cellpadding=\"10\" bgcolor=\"green\"><tr><td>";
+echo "Page Successfully Updated!";
+echo "</td></tr></table><br />";
+
+echo "<table cellpadding=\"10\" bgcolor=\"gray\"><tr><td>";
+echo "Page Preview,<br /><br />";
+echo $data;
+echo "</td></tr></table><br />";
+
+
+//Write new page
+$fh = fopen($file, 'w');
+fwrite($fh, $data);
+fclose($fh);
+
+
+}
+
+//else
+//{
+//echo "You are not logged in.  Please login in and try again.";
+//}
+
+}
+
+?>
+
+
+<br>
+<center>
+<form action="update.123php123" method="POST">
+<input type="hidden" name="submitted">
+
+<table border="0" cellpadding="5">
+Update:<br><textarea rows="15" cols="40" wrap="physical" name="body"></textarea><br>
+
+<input type="submit" value="Submit"></table>
+</form>
+
+</center>
+
+</body>
+</html>
