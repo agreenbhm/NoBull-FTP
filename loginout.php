@@ -7,9 +7,6 @@ $connect_error = false;
 	
 if(!isset($_POST['login'])) //if user has NOT submitted login form
 {
-      //$loginerror = false;
-	  //$connect_error = false;
-
       echo "Login not posted";
 } //end if user has not submitted login form
 	
