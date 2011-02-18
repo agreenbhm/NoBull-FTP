@@ -13,7 +13,9 @@ if(!isset($_POST['login'])) //If NOT re-loading this page as a result of a login
 			$filename = basename( $_FILES['uploadedfile']['name']); //Name of file to be uploaded (without path).
 			
 			$target_fullname = $target_path . basename( $_FILES['uploadedfile']['name']); //Full path on the server that file will be held (including file name)
+			
 			//Upload 2 Begin
+			
 			if(move_uploaded_file($_FILES['uploadedfile']['tmp_name'], $target_fullname)) //Transfer file to temp location on web server 
 			{ 
 				
@@ -30,42 +32,38 @@ if(!isset($_POST['login'])) //If NOT re-loading this page as a result of a login
 			$source = $target_fullname; //File to be FTP'd, including path, in temp location on web server
 			$dest = $filename; //Destination filename (and eventually, in later code, path) on FTP server
 			
-			$conn_id = ftp_connect($_SESSION['ftp_server'], $_SESSION['ftp_port'], 30); //Open FTP connection using cached login credentials
-			
-			// -------------Diagnostic info regarding ftp_connect----------------
-			if($conn_id) //If able to connect to FTP server
+			if($conn_id = ftp_connect($_SESSION['ftp_server'], $_SESSION['ftp_port'], 30)) //If able to connect to FTP server
 			{
-				echo "Session Connected";
-			}
+				echo "Session Connected<br>";  //Diagnostic message
+			
+				if(@ftp_login($conn_id, $_SESSION['ftp_user'], $_SESSION['ftp_pw'])) //If login to FTP server using cached credentials is successful
+				{
+					$upload = ftp_put($conn_id, $dest, $source, $_SESSION['ftp_mode']); //Transfer file to FTP using temp file as source
+
+					if ($upload) //If successfully uploaded via FTP
+					{
+						echo 'FTP upload of ' . $dest . ' was successfull!';
+						ftp_close($conn_id);
+					}
+
+					elseif (!$upload) //If FTP upload is unsuccessful
+					{ 
+						echo 'FTP upload of ' . $dest . ' failed!'; 
+						ftp_close($conn_id); //Close FTP session
+					}
+				}
+			}// End if able to connect
+			
 			elseif(!$conn_id)
 			{
-				echo "Session Unable to Connect<br>";
+				echo "Session Unable to Connect<br>"; //Diagnostic message
 			}
-			// ----------------End diagnostic info------------------
-			
-			if(ftp_login($conn_id, $_SESSION['ftp_user'], $_SESSION['ftp_pw'])) //If login to FTP server using cached credentials is successful
-			{
-				$upload = ftp_put($conn_id, $dest, $source, $_SESSION['ftp_mode']); //Transfer file to FTP using temp file as source
-
-				if ($upload) //If successfully uploaded via FTP
-				{
-				    echo 'FTP upload of ' . $dest . ' was successfull!';
-					ftp_close($conn_id);
-				    unlink($source); //Delete file from temp directory on webserver
-				}
-
-				elseif (!$upload) //If FTP upload is unsuccessful
-				{ 
-					echo 'FTP upload of ' . $dest . ' failed!'; 
-					ftp_close($conn_id); //Close FTP session
-				}
-			}
-
 			//End FTP code block
 			
 			include 'upload_form.inc'; //Include form to upload files
 
-
+			unlink($source); //Delete file from temp directory on webserver
+			
 	} //end if logged in and uploading
 
 
