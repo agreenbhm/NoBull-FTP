@@ -1,4 +1,5 @@
 <?php
+echo "<center>";
 
 if($conn_id = ftp_connect($_SESSION['ftp_server'], $_SESSION['ftp_port'], 30)) //If able to connect to FTP server
 {
@@ -14,8 +15,8 @@ if($conn_id = ftp_connect($_SESSION['ftp_server'], $_SESSION['ftp_port'], 30)) /
 		{
 			if(ftp_size($conn_id, $i) == -1)
 			{
-				//echo "[ " . $i . " ]<br>\n";
-				echo $i . "<br>";
+				$i = ltrim($i, "./");
+				echo '<a href="./chdir.php?ftp_chdir=' . $i . '">[ ' . $i . ' ]</a></font><br>';
 			}
 			
 		} //End list remote  folders
@@ -24,8 +25,8 @@ if($conn_id = ftp_connect($_SESSION['ftp_server'], $_SESSION['ftp_port'], 30)) /
 		{
 			if(ftp_size($conn_id, $i) !== -1)
 			{
-				//echo $i . "<br>\n";
-				echo $i . "<br>";
+				$i = ltrim($i, "./");
+				echo '<a href="./chdir.php?ftp_get=' . $i . '">' . $i . '</a><br>';
 			}
 		} //End list remote files		
 	} //End if able to login
@@ -38,4 +39,6 @@ elseif(!$conn_id)
 {
 	echo "Session Unable to Connect<br>"; //Diagnostic message
 }
+
+echo "</center>";
 ?>
