@@ -10,16 +10,20 @@ if($conn_id = ftp_connect($_SESSION['ftp_server'], $_SESSION['ftp_port'], 30)) /
 		
 		if(isset($_GET['ftp_parent']) && $_GET['ftp_parent'] == "true")  //If parameter passed to change directory
 		{
-			ftp_chdir($conn_id, $_GET['ftp_currentdir']);
-			ftp_chdir($conn_id, '../');
-			//ftp_cdup($conn_id); //Execute change
+			@ftp_chdir($conn_id, $_GET['ftp_currentdir']); //Set dir to current dir from previous page
+			@ftp_chdir($conn_id, '../'); //Change dir to passed parameter
 		} //End change directory
 		
 		if(isset($_GET['ftp_chdir']))  //If parameter passed to change directory
 		{
 			$chdir = $_GET['ftp_chdir']; //Set $chdir to passed parameter
-			ftp_chdir($conn_id, $chdir); //Execute change
+			@ftp_chdir($conn_id, $chdir); //Execute change
 		} //End change directory
+		
+		if(isset($_GET['ftp_get']))
+		{
+			include "downloader.php";
+		}
 
 		echo "Logged in to FTP, list contents<br><br>"; //Diagnostic message
 		$current_dir = ftp_pwd($conn_id); //Set variable of current working directory
