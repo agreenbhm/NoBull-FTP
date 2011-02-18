@@ -6,7 +6,7 @@ include 'top.inc'; //Include header file
 
 if(!isset($_POST['login'])) //If NOT re-loading this page as a result of a login
 {
-	if(isset($_SESSION['name']) && isset($_FILES['uploadedfile'])) //If logged in and trying to upload
+	if(isset($_SESSION['name']) && isset($_FILES['uploadedfile']) && !empty($_FILES['uploadedfile']['tmp_name'])) //If logged in and trying to upload
 	{
 			$target_path = "tmp/"; // Where the file is going to be stored on the server temporarily before upload via FTP
 
@@ -70,19 +70,27 @@ if(!isset($_POST['login'])) //If NOT re-loading this page as a result of a login
 	elseif (!isset($_SESSION['name']) && !isset($_POST['logout'])) //If not logged in
 	{
 		echo "You must be logged in to upload";
-	}
+	} //end if not logged in
+	
+	elseif (isset($_SESSION['name']) && isset($_FILES['uploadedfile']) && empty($_FILES['uploadedfile']['tmp_name'])) //If no file selected to upload but button pressed
+	{
+		echo "No file selected to upload";
+		
+		include 'upload_form.inc'; //Include form to upload files
 
+	} //End error handling	
+	
 } //End if NOT submitting login form
 
 if (isset($_SESSION['name']) && !isset($_FILES['uploadedfile'])) //If page loaded and user logged in but has not submitted file to upload
 {
 	include 'upload_form.inc'; //Include form to upload files
-}
+} //end if page loaded but file upload form not submitted
 
 elseif (!isset($_SESSION['name'])) //If not logged in but page was loaded directly
 {
 	echo "You must be logged in to upload";
-}
+} //end if user not logged in but page loaded directly
 
 include 'bot.inc'; //Include footer file
 
