@@ -37,9 +37,9 @@ if(!isset($_POST['login'])) //If NOT re-loading this page as a result of a login
 				echo "Session Connected<br>";  //Diagnostic message
 			
 				if(@ftp_login($conn_id, $_SESSION['ftp_user'], $_SESSION['ftp_pw'])) //If login to FTP server using cached credentials is successful
-				{
+				{					
 					$upload = ftp_put($conn_id, $dest, $source, $_SESSION['ftp_mode']); //Transfer file to FTP using temp file as source
-
+					
 					if ($upload) //If successfully uploaded via FTP
 					{
 						echo 'FTP upload of ' . $dest . ' was successfull!';
@@ -51,7 +51,8 @@ if(!isset($_POST['login'])) //If NOT re-loading this page as a result of a login
 						echo 'FTP upload of ' . $dest . ' failed!'; 
 						ftp_close($conn_id); //Close FTP session
 					}
-				}
+					
+				}// End if logged in successfully
 			}// End if able to connect
 			
 			elseif(!$conn_id)
@@ -87,10 +88,15 @@ if (isset($_SESSION['name']) && !isset($_FILES['uploadedfile'])) //If page loade
 	include 'upload_form.inc'; //Include form to upload files
 } //end if page loaded but file upload form not submitted
 
-elseif (!isset($_SESSION['name'])) //If not logged in but page was loaded directly
+elseif (!isset($_SESSION['name']) && isset($_POST['logout'])) //If user submitted logout form
 {
 	echo "You must be logged in to upload";
 } //end if user not logged in but page loaded directly
+
+if(isset($_SESSION['name'])) //if logged in then list contents
+{
+	include "list_contents.php";
+} //end if logged in then list contents
 
 include 'bot.inc'; //Include footer file
 
