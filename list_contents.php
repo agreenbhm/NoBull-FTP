@@ -19,11 +19,6 @@ if($conn_id = ftp_connect($_SESSION['ftp_server'], $_SESSION['ftp_port'], 30)) /
 			$chdir = $_GET['ftp_chdir']; //Set $chdir to passed parameter
 			@ftp_chdir($conn_id, $chdir); //Execute change
 		} //End change directory
-		
-		if(isset($_GET['ftp_get']))
-		{
-			include "downloader.php";
-		}
 
 		echo "Logged in to FTP, list contents<br><br>"; //Diagnostic message
 		$current_dir = ftp_pwd($conn_id); //Set variable of current working directory
@@ -49,7 +44,7 @@ if($conn_id = ftp_connect($_SESSION['ftp_server'], $_SESSION['ftp_port'], 30)) /
 			if(ftp_size($conn_id, $i) !== -1)
 			{
 				$i = ltrim($i, "./"); //Remove  leading ./ from name
-				echo '<a href="./uploader.php?ftp_get=' . $i . '">' . $i . '</a><br>'; //Output files & link to fget
+				echo '<a href="./downloader.php?ftp_get=' . $i . '&current_dir=' . $current_dir . '">' . $i . '</a><br>'; //Output files & link to fget
 			}
 		} //End list remote files		
 	} //End if able to login

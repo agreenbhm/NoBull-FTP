@@ -26,6 +26,11 @@ session_start(); // start session
 
 <center>
 
+<?php
 
+if(isset($_SESSION['name'])) //if logged in then list contents
+{
+	include "list_contents.php";
+} //end if logged in then list contents
 
-<?php include("bot.inc"); ?> 
+include("bot.inc"); ?> 

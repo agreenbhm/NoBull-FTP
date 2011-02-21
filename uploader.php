@@ -26,7 +26,6 @@ if(!isset($_POST['login'])) //If NOT re-loading this page as a result of a login
 				echo "There was an error uploading the file to the server for FTP transfer, please try again!"; //Error message
 			}
 
-
 			//Start FTP code block
 			
 			$source = $target_fullname; //File to be FTP'd, including path, in temp location on web server
@@ -95,7 +94,7 @@ elseif (!isset($_SESSION['name']) && isset($_POST['logout'])) //If user submitte
 
 if(isset($_SESSION['name'])) //if logged in then list contents
 {
-	include "list_contents.php";
+	include ("list_contents.php");
 } //end if logged in then list contents
 
 include 'bot.inc'; //Include footer file
