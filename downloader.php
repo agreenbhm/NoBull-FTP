@@ -7,7 +7,7 @@
 			{
 				//echo "Session Connected<br>";  //Diagnostic message
 			
-				if(@ftp_login($conn_id, $_SESSION['ftp_user'], $_SESSION['ftp_pw'])) //If login to FTP server using cached credentials is successful
+				if(@ftp_login($conn_id, $_SESSION['ftp_user'], mcrypt_decrypt(MCRYPT_RIJNDAEL_256, $_SESSION['enc_key'], $_SESSION['ftp_pw'], MCRYPT_MODE_CFB, $_SESSION['enc_iv']))) //If login to FTP server using cached credentials is successful
 				{	
 					
 					//echo "this is the current dir: " . $_GET['current_dir'] . "<br><br>";

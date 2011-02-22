@@ -35,7 +35,7 @@ if(!isset($_POST['login'])) //If NOT re-loading this page as a result of a login
 			{
 				echo "Session Connected<br>";  //Diagnostic message
 			
-				if(@ftp_login($conn_id, $_SESSION['ftp_user'], $_SESSION['ftp_pw'])) //If login to FTP server using cached credentials is successful
+				if(@ftp_login($conn_id, $_SESSION['ftp_user'], mcrypt_decrypt(MCRYPT_RIJNDAEL_256, $_SESSION['enc_key'], $_SESSION['ftp_pw'], MCRYPT_MODE_CFB, $_SESSION['enc_iv']))) //If login to FTP server using cached credentials is successful
 				{					
 					$upload = ftp_put($conn_id, $dest, $source, $_SESSION['ftp_mode']); //Transfer file to FTP using temp file as source
 					

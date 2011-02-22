@@ -5,7 +5,7 @@ if($conn_id = ftp_connect($_SESSION['ftp_server'], $_SESSION['ftp_port'], 30)) /
 {
 	echo "Session Connected<br><br>";  //Diagnostic message
 
-	if(@ftp_login($conn_id, $_SESSION['ftp_user'], $_SESSION['ftp_pw'])) //If login to FTP server using cached credentials is successful
+	if(@ftp_login($conn_id, $_SESSION['ftp_user'], mcrypt_decrypt(MCRYPT_RIJNDAEL_256, $_SESSION['enc_key'], $_SESSION['ftp_pw'], MCRYPT_MODE_CFB, $_SESSION['enc_iv']))) //If login to FTP server using cached credentials is successful
 	{	
 		
 		if(isset($_GET['ftp_parent']) && $_GET['ftp_parent'] == "true")  //If parameter passed to change directory
